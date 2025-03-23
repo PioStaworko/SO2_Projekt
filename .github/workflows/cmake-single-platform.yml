@@ -27,7 +27,7 @@ jobs:
         run: ctest -C ${{env.BUILD_TYPE}}
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v2
         with:
           name: build-artifacts
           path: ${{github.workspace}}/build
