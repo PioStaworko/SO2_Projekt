@@ -17,6 +17,7 @@ private:
     int num_philosophers;
     vector<mutex> forks;
     vector<thread> philosophers;
+    vector<chrono::time_point<chrono::system_clock>> last_meal_time;
     mutex print_mutex;
 
     void philosopher(int id) {
@@ -30,11 +31,12 @@ private:
 
     void think(int id) {
         static std::mt19937 rnd(std::time(nullptr));
-        int thinking_time =  std::uniform_int_distribution<>(1000, 4000)(rnd);
+        int thinking_time = std::uniform_int_distribution<>(1000, 4000)(rnd);
 
         {
             lock_guard<mutex> lock(print_mutex);
-            cout << timestamp() << " Philosopher " << id << " is thinking..." << endl;
+            cout << timestamp() << " Philosopher " << id << " is thinking...";
+            cout << "  Philosopher " << id << " last ate " << last_meal_seconds_ago(id) << " seconds ago" << endl;
         }
         this_thread::sleep_for(chrono::milliseconds(thinking_time));
     }
@@ -51,6 +53,7 @@ private:
             this_thread::sleep_for(chrono::milliseconds(2000));
             forks[left_fork].unlock();
             forks[right_fork].unlock();
+            last_meal_time[id] = chrono::system_clock::now();
         } else {
             if (left_locked) {
                 forks[left_fork].unlock();
@@ -62,7 +65,7 @@ private:
                 lock_guard<mutex> lock(print_mutex);
                 cout << timestamp() << " Philosopher " << id << " wants to eat, but forks are busy..." << endl;
             }
-            this_thread::sleep_for(chrono::milliseconds(2000));
+            this_thread::sleep_for(chrono::milliseconds(100));
         }
     }
 
@@ -74,8 +77,14 @@ private:
         return ss.str();
     }
 
+    int last_meal_seconds_ago(int id) {
+        auto now = chrono::system_clock::now();
+        auto duration = chrono::duration_cast<chrono::seconds>(now - last_meal_time[id]);
+        return duration.count();
+    }
+
 public:
-    Philosopher(int n) : num_philosophers(n), forks(n) {}
+    Philosopher(int n) : num_philosophers(n), forks(n), last_meal_time(n, chrono::system_clock::now()) {}
 
     void start() {
         for (int i = 0; i < num_philosophers; i++) {
