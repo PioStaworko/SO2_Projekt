@@ -26,8 +26,8 @@ Problem wygląda następująco:
 Przy okrągłym stole siedzi n filozofów. Każdy z nich może wykonywać dwie czynności - jeść spaghetti lub myśleć. 
 Przed każdym z nich stoi miska ze spaghetti, a pomiędzy każdymi dwoma filozofami znajduje się widelec (każdy filozof ma w ten sposób do dyspozycji dwa widelce - po lewej oraz prawej stronie miski).
 W przypadku gdy filozof chce zjeść, musi on to robić dwoma widelcami; jednym przecież byłoby ciężko. Filozofowie dodatkowo są nadzwyczaj mało rozmowni, więc w żaden sposób się ze sobą nie komunikują.
-Zależnie od podejścia do problemu, może wystąpić ryzyko zakleszczenia, czyli przypadku w którym nasi filozofowie nie będą w stanie jeść, ponieważ widelce będą zajęte przez innych filozofów. 
-Mogłoby się tak stać w przypadku, gdy np.: Każdy z filozofów na raz podniesie widelec po swojej lewej stronie.
+Zależnie od podejścia do problemu, może wystąpić ryzyko zakleszczenia (deadlock), czyli przypadku w którym nasi filozofowie nie będą w stanie jeść, ponieważ widelce będą zajęte przez innych filozofów. 
+Mogłoby się tak stać, gdy np.: Każdy z filozofów na raz podniesie widelec po swojej lewej stronie.
 # Rozwiązanie problemu - opis implementacji
 W programie występują dwie kluczowe klasy - `Philosopher` - reprezentujący filozofa, każdy obiekt jest wątkiem oraz `Fork` - reprezentujący widelec, każdy obiekt jest mutexem.
 
