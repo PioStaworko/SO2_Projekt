@@ -15,6 +15,9 @@ using namespace std;
 class Philosopher {
 private:
     int num_philosophers;
+    int eating_time;
+    int min_thinking_time;
+    int max_thinking_time;
     vector<mutex> forks;
     vector<thread> philosophers;
     vector<chrono::time_point<chrono::system_clock>> last_meal_time;
@@ -31,7 +34,7 @@ private:
 
     void think(int id) {
         static std::mt19937 rnd(std::time(nullptr));
-        int thinking_time = std::uniform_int_distribution<>(1000, 4000)(rnd);
+        int thinking_time = std::uniform_int_distribution<>(min_thinking_time, max_thinking_time)(rnd);
 
         {
             lock_guard<mutex> lock(print_mutex);
@@ -50,7 +53,7 @@ private:
                 lock_guard<mutex> lock(print_mutex);
                 cout << timestamp() << " Philosopher " << id << " is eating..." << endl;
             }
-            this_thread::sleep_for(chrono::milliseconds(2000));
+            this_thread::sleep_for(chrono::milliseconds(eating_time));
             forks[left_fork].unlock();
             forks[right_fork].unlock();
             last_meal_time[id] = chrono::system_clock::now();
@@ -84,7 +87,9 @@ private:
     }
 
 public:
-    Philosopher(int n) : num_philosophers(n), forks(n), last_meal_time(n, chrono::system_clock::now()) {}
+    Philosopher(int n, int eat_time, int min_think_time, int max_think_time)
+        : num_philosophers(n), eating_time(eat_time), min_thinking_time(min_think_time), max_thinking_time(max_think_time),
+          forks(n), last_meal_time(n, chrono::system_clock::now()) {}
 
     void start() {
         for (int i = 0; i < num_philosophers; i++) {
